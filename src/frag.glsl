@@ -22,6 +22,10 @@ vec2 cpow2(vec2 a) {
     return cmul(a, a);
 }
 
+vec3 lerp(vec3 color_a, vec3 color_b, float t) {
+    return vec3(color_a + (color_b - color_a) * t);
+}
+
 void main() {
     vec2 uv = (gl_FragCoord.xy - .5 * iResolution.xy) / iResolution.y;
     vec3 col = vec3(0);
@@ -40,7 +44,11 @@ void main() {
     if (!(i == ITERATIONS)) {
         float smooth_iter = float(i) + 1.0 - log2(log2(length(z) / 2.0));
         float t = smooth_iter / float(ITERATIONS);
-        col = vec3(t);
+
+        t = -log(t) / log(10.0);
+
+        col = lerp(vec3(1, 0, 0),
+                lerp(vec3(0.8, 1, 0), vec3(0, 0.5, 1), t), t);
     }
 
     gl_FragColor = vec4(col, 0.0);
