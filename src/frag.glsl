@@ -8,8 +8,7 @@ varying vec2 uv;
 uniform vec2 iResolution;
 uniform float zoom;
 uniform vec2 pos;
-
-#define ITERATIONS 2000
+uniform int iterations;
 
 vec2 cmul(vec2 a, vec2 b) {
     return vec2(
@@ -26,29 +25,39 @@ vec3 lerp(vec3 color_a, vec3 color_b, float t) {
     return vec3(color_a + (color_b - color_a) * t);
 }
 
+vec3 get_color(int i) {
+    float n1 = sin(float(i) * 0.1) * 0.5 + 0.5;
+    float n2 = cos(float(i) * 0.1) * 0.5 + 0.5;
+    return vec3(n1, n2, 1.0) * (1.0);
+}
+
 void main() {
     vec2 uv = (gl_FragCoord.xy - .5 * iResolution.xy) / iResolution.y;
     vec3 col = vec3(0);
 
-    vec2 z = vec2(0);
 
     vec2 c = vec2(uv.x * zoom - pos.x, uv.y * zoom - pos.y);
+    vec2 z = vec2(0);
     int i;
-    for (i = 0; i < ITERATIONS; ++i) {
+    for (i = 0; i < iterations; ++i) {
         z = cpow2(z) + c;
         if (length(z) > 4.0) {
             break;
         }
     }
 
-    if (!(i == ITERATIONS)) {
-        float smooth_iter = float(i) + 1.0 - log2(log2(length(z) / 2.0));
-        float t = smooth_iter / float(ITERATIONS);
+    if (!(i == iterations)) {
+        col = get_color(i);
 
-        t = -log(t) / log(10.0);
-
-        col = lerp(vec3(1, 0, 0),
-                lerp(vec3(0.8, 1, 0), vec3(0, 0.5, 1), t), t);
+        // float smooth_iter = float(i) + 1.0 - log2(log2(length(z) / 2.0));
+        // float t = smooth_iter / float(iterations);
+        //
+        // t = -log(t) / log(10.0);
+        //
+        // col = lerp(vec3(1, 0, 0),
+        //         lerp(vec3(0.8, 1, 0), vec3(0, 0.5, 1), t), t);
+        //
+        //
     }
 
     gl_FragColor = vec4(col, 0.0);

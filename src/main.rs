@@ -54,6 +54,7 @@ async fn main() {
                 UniformDesc::new("iResolution", UniformType::Float2),
                 UniformDesc::new("zoom", UniformType::Float1),
                 UniformDesc::new("pos", UniformType::Float2),
+                UniformDesc::new("iterations", UniformType::Int1),
             ],
             ..Default::default()
         },
@@ -64,6 +65,8 @@ async fn main() {
     let mut pos: (f32, f32) = (0.0, 0.0);
 
     let mut hide_ui = false;
+
+    let mut iterations: i32 = 2_000_i32;
 
     loop {
         clear_background(BLACK);
@@ -90,6 +93,7 @@ async fn main() {
         material.set_uniform("iResolution", (screen_width(), screen_height()));
         material.set_uniform("zoom", zoom);
         material.set_uniform("pos", pos);
+        material.set_uniform("iterations", iterations);
 
         gl_use_material(&material);
         draw_texture_ex(
@@ -118,6 +122,13 @@ async fn main() {
                     let (mouse_x, mouse_y) = mouse_position();
                     ui.label(None, &format!("Mouse Position: {mouse_x}, {mouse_y}"));
                     ui.label(None, &format!("Zoom: {zoom}"));
+                    ui.label(None, &format!("Iterations: {iterations}"));
+                    // ui.slider(
+                    //     hash!(),
+                    //     &format!("iterations: {iterations}"),
+                    //     0..10000,
+                    //     data,
+                    // );
 
                     if ui.button(None, "Hide Ui") {
                         hide_ui = true;
